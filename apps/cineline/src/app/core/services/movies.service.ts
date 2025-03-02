@@ -10,7 +10,7 @@ export class MoviesService {
   selectedMovie = signal<Movie | null>(null);
 
   currentPage = signal<number>(1);
-  hasMorePage = signal<boolean>(true);
+  hasMorePages = signal<boolean>(true);
   isLoading = signal<boolean>(false);
 
   private readonly _apiUrl = 'envirioment.apiUrl';
@@ -37,7 +37,7 @@ export class MoviesService {
       .pipe(tap((response) => {
         const currentMovies = this.movies();
         this.movies.set([...currentMovies, ...response.results]);
-        this.hasMorePage.set(response.page < response.total_pages);
+        this.hasMorePages.set(response.page < response.total_pages);
         this.currentPage.update((currentPage) => currentPage + 1);
         this.isLoading.set(false);
       }))

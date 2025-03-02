@@ -1,4 +1,4 @@
-import { Component, effect, HostListener, inject } from '@angular/core';
+import { Component, computed, effect, HostListener, inject } from '@angular/core';
 import { MoviesService } from '../../core/services/movies.service';
 
 @Component({
@@ -7,8 +7,10 @@ import { MoviesService } from '../../core/services/movies.service';
   templateUrl: './movies.component.html',
 })
 export class MoviesComponent {
-  private readonly _moviesService = inject(MoviesService);
+  isLoading = computed(() => this._moviesService.isLoading());
+  hasMorePages = computed(() => this._moviesService.hasMorePages());
 
+  private readonly _moviesService = inject(MoviesService);
   readonly movies = this._moviesService.movies;
 
   constructor(){
@@ -19,6 +21,8 @@ export class MoviesComponent {
 
   @HostListener('window:scroll')
   onScroll(): void {
+    if (this.isLoading() || !this.hasMorePages()) { return; }
+
     const scrollPosition = window.innerHeight + window.scrollY;
     const scrollThreshold = document.documentElement.scrollHeight;
 
