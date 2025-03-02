@@ -9,14 +9,18 @@ export class MoviesService {
   trendingMovies = signal<Movie[]>([]);
   selectedMovie = signal<Movie | null>(null);
 
+  currentPage = signal<number>(1);
+  hasMorePage = signal<boolean>(true);
+  isLoading = signal<boolean>(false);
+
   private readonly _apiUrl = 'envirioment.apiUrl';
-  private readonly _apiKey = 'envirioment.apiKey';
+  private readonly _apiKey = 'https://api.themoviedb.org/3';
   private readonly _searchTerm = signal<string>('');
 
   private readonly _http = inject(HttpClient);
 
   constructor() {
-    this._getMovies();
+    this.getMovies();
   }
 
   getMovieById(movieId: string): Observable<MovieResponse> {
@@ -25,12 +29,18 @@ export class MoviesService {
     );
   }
 
-  _getMovies(): void {
+  getMovies(): void {
     this._http
       .get<MovieResponse>(
         `${this._apiUrl}/movie/popular?api_key=${this._apiKey}`
       )
-      .pipe(tap((response) => this.movies.set(response.results)))
+      .pipe(tap((response) => {
+        const currentMovies = this.movies();
+        this.movies.set([...currentMovies, ...response.results]);
+        this.hasMorePage.set(response.page < response.total_pages);
+        this.currentPage.update((currentPage) => currentPage + 1);
+        this.isLoading.set(false);
+      }))
       .subscribe();
   }
 }

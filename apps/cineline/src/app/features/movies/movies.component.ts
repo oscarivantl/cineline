@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, HostListener, inject } from '@angular/core';
 import { MoviesService } from '../../core/services/movies.service';
 
 @Component({
@@ -16,4 +16,15 @@ export class MoviesComponent {
       console.log(this.movies());
     });
   }
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const scrollThreshold = document.documentElement.scrollHeight;
+
+    if (scrollPosition > scrollThreshold) {
+      this._moviesService.getMovies();
+    }
+  }
+
 }
