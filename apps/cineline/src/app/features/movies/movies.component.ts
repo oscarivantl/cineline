@@ -1,10 +1,12 @@
 import { Component, computed, effect, HostListener, inject } from '@angular/core';
 import { MoviesService } from '../../core/services/movies.service';
 import { JsonPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { CardComponent } from './components/card/card.component';
 
 @Component({
   selector: 'app-movies',
-  imports: [JsonPipe],
+  imports: [RouterLink,CardComponent],
   templateUrl: './movies.component.html',
 })
 export class MoviesComponent {
